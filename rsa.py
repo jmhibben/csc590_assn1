@@ -14,12 +14,9 @@ functions in cases where they were only called from one function.
 '''
 
 from fractions import gcd
-from random import randint, getrandbits
+from random import randint
 from math import log
 from copy import copy
-
-# global variables
-primes = []
 
 def coPrime(a, b):
     """Determine if a and b are coprime; return false if gcd(a,b) is anything
@@ -27,21 +24,6 @@ def coPrime(a, b):
     if gcd(a,b) != 1:
         return False
     return True
-
-def extendedGCD(a, b):
-    if a == 0:
-        return b, 0, 1
-    else:
-        g, y, x = extendedGCD(b % a, a)
-        return g, x - (b // a) * y, y
-
-def modMultInverse(e, totient):
-    '''Modular Multiplicative Inverse function'''
-    if coPrime(e, totient):
-        combined = extendedGCD(e, totient)
-        return combined[1] % totient
-    else:
-        return 0
 
 def modExp(a, d, n):
     '''returns (a ** d) mod n'''
@@ -133,29 +115,41 @@ def millerRabinTest(n, k):
             return False
     return True  # reasonably certain that n is prime
 
-def findPrime(a, b, k):
-    '''
-    Returns a pseudo-prime roughly between a, b (may be greater than b).
-    Limit the number of attempts to find a pseudo-prime to
-    10*ln(x)+3 (most likely thousands of attempts, so it shouldn't fail).
-    If it can't find a prime, throw a ValueError to halt the program.
-    '''
-    x = randint(a, b)
-    for i in range(0, int(10 * log(x) + 3)):
-        if millerRabinTest(x, k):
-            return x
-        else:
-            x += 1
-    raise ValueError
-
 def newKey(a, b, k):
     '''
     Try to find two pseudo primes ~ between a, b to generate the keys.
     Raises a ValueError if it cannot find one.
     '''
-    # define inner function
-    # rewrite this to get prime from sieve(b)
+    # define inner functions
+    def findPrime(a, b, k):
+        '''
+        Returns a pseudo-prime roughly between a, b (may be greater than b).
+        Limit the number of attempts to find a pseudo-prime to
+        10*ln(x)+3 (most likely thousands of attempts, so it shouldn't fail).
+        If it can't find a prime, throw a ValueError to halt the program.
+        '''
+        x = randint(a, b)
+        for i in range(0, int(10 * log(x) + 3)):
+            if millerRabinTest(x, k):
+                return x
+            else:
+                x += 1
+        raise ValueError
 
+    def extendedGCD(a, b):
+        if a == 0:
+            return b, 0, 1
+        else:
+            g, y, x = extendedGCD(b % a, a)
+            return g, x - (b // a) * y, y
+
+    def modMultInverse(e, totient):
+        '''Modular Multiplicative Inverse function'''
+        if coPrime(e, totient):
+            combined = extendedGCD(e, totient)
+            return combined[1] % totient
+        else:
+            return 0
 
     # newKey function body
     try:
