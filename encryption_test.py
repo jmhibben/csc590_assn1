@@ -1,4 +1,5 @@
 import rsa
+import DES as des
 
 '''Static class designed to take advantage of RSA encryption functions without
 needing to utilize a constructor'''
@@ -42,6 +43,18 @@ class RSA:
             decrypted = newPlainText[:lengths[0]]
         return decrypted
 
-#class TripleDES:
-    # Import your file by mine, then put only the necessary functions to make
-    # your class work here.
+class DES:
+    keyBase = b"blahblah"
+    keys = []
+    data = b"Please encrypt my data"
+    cipher = ""
+
+    def keyGen(keyInput = keyBase):
+        '''Takes a bytestring and converts it into a key.'''
+        DES.keys = des.generateKey(keyInput)
+
+    def encrypt():
+        DES.cipher = crypt(keys, block, 'E')
+
+    def decrypt():
+        return blockData(keys, DES.cipher, 'D')
