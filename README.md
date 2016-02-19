@@ -1,6 +1,13 @@
 # csc590_assn1
 Implementation of symmetric and asymmetric cryptography algorithms for MSU CSC 590-002
 
-Zach- put your actual use-case in encryption_test.py; just import your file and you should be able to make a quick class similar to mine to run your code through.
+To run on Windows: Load Idle (version 3.4), then load encryption_test.py.
+To use RSA encryption, run the following commands in the interpreter:
 
-I think the only other thing that we may want to do is create a main() function that automatically runs through all of the code, but it should be unnecessary.
+```Python
+RSA.genKeys(50)
+RSA.encrypt(message) # message is optional
+RSA.decrypt() # Outputs decrypted text
+# To check if the decryption outputs the same as the original plaintext:
+RSA.decrypt() == RSA.plainText
+```
