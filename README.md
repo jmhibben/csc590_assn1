@@ -11,3 +11,5 @@ RSA.decrypt() # Outputs decrypted text
 # To check if the decryption outputs the same as the original plaintext:
 RSA.decrypt() == RSA.plainText
 ```
+
+The DES algorithm will run its own test once the module loads.
