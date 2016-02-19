@@ -43,18 +43,18 @@ class RSA:
             decrypted = newPlainText[:lengths[0]]
         return decrypted
 
-class DES:
-    keyBase = b"blahblah"
-    keys = []
-    data = b"Please encrypt my data"
-    cipher = ""
-
-    def keyGen(keyInput = keyBase):
-        '''Takes a bytestring and converts it into a key.'''
-        DES.keys = des.generateKey(keyInput)
-
-    def encrypt():
-        DES.cipher = crypt(keys, block, 'E')
-
-    def decrypt():
-        return blockData(keys, DES.cipher, 'D')
+# class DES:
+#     keyBase = b"blahblah"
+#     keys = []
+#     data = b"Please encrypt my data"
+#     cipher = ""
+#
+#     def keyGen(keyInput = keyBase):
+#         '''Takes a bytestring and converts it into a key.'''
+#         DES.keys = des.generateKey(keyInput)
+#
+#     def encrypt():
+#         DES.cipher = crypt(keys, block, 'E')
+#
+#     def decrypt():
+#         return blockData(keys, DES.cipher, 'D')
