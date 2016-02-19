@@ -1,5 +1,16 @@
-Enter file contents here#variables and tables for multiplication for DES
+'''
+Will autorun to encrypt and decrypt the data with the key listed below in variables section
+Input: data and TheKey variables listed below
+Output: Original data, The ciphered and decrypted data
 
+To change the message encoded choose a different byte value for data below in variables section
+
+To change the key used change TheKey in variables section below
+'''
+#variables and tables for multiplication for DES
+data = b"Please encrypt my data"
+datacopy = data
+TheKey = b"blahblah"
 keySize = 8
 blockSize = 8
 padding = b"x"
@@ -138,7 +149,7 @@ def convertToBits(data):#turns data string into list of bits
 
     return bits
 
-def convertToString(data):
+def convertToString(data):#turns list of bits to data string
     finalString= []
     pos = 0
     c = 0
@@ -150,19 +161,17 @@ def convertToString(data):
         pos += 1
     return bytes(finalString)
     
-def generateKey(keyinput):
-    data = b"Please encrypt my data"
+def generateKey(keyinput):#generates the key from plaintext and subkeys
     checkKeyInput(keyinput)
     key = convertToBits(keyinput)
-    #print(key)
     sk = generateSubKeys(key)
-    #print(len(sk), len(sk[0]), sk)
-    blockData(sk, data, 'E')
+    return sk
 
-def transform(table, block):
+
+def transform(table, block):#used for all multiplications on the data
     return list(map(lambda x: block[x], table))
     
-def generateSubKeys(key):
+def generateSubKeys(key):#creates subkeys from the 64-bit key
     sk = [ [0] * 48 ] * 16 #subkeys list
     i = 0
     L = []
@@ -171,17 +180,16 @@ def generateSubKeys(key):
     R = key[28:]
     while i < 16:
         j = 0
-        #print( "i", i, j)
         # Perform circular left shifts
         while j < rotationsTable[i]:
             L.append(L[0])
             del L[0]
-            #print("L", L)
+            
             R.append(R[0])
             del R[0]
-            #print("R", R)
+            
             j += 1
-            #print("j", j)
+            
 
             # Create one of the 16 subkeys
         sk[i] = transform(choice2, L + R)
@@ -190,27 +198,27 @@ def generateSubKeys(key):
         
     return sk
 
-def blockData(sk, data, ED):
+def blockData(sk, data, ED):#chunks data and sends through crypter
     if not data:
         return ''
     if len(data) % blockSize != 0:
         data += (blockSize - (len(data) % blockSize)) * padding
     i = 0
-    #print(i, len(data))
     dict = {}
     fBlock = []
     while i < len(data):
         block = convertToBits(data[i:i+8])
-        #print(len(block), block)
-        fBlock = crypt(sk, block, ED)
-        print(convertToString(fBlock))
-        fBlock.append(convertToString(fBlock))
-        print("fBlock", fBlock)
+        pBlock = crypt(sk, block, ED)
+        fBlock.append(convertToString(pBlock))
         i += 8
-    #print( "block", bytes.fromhex('').join(fBlock))
-    return bytes.fromhex('').join(fBlock)
+    finalBlock = bytes.fromhex('').join(fBlock)
+    if ED == 'D':
+        finalBlock = finalBlock.decode("utf-8")
+        if len(finalBlock) != len(datacopy):
+            finalBlock = finalBlock[:len(datacopy)-len(data)]
+    return finalBlock
 
-def crypt(sk, block, ED):
+def crypt(sk, block, ED):#encrypts data blocks
     block = transform(firstPermutation, block)
     L = block[:32]
     R = block[32:]
@@ -223,13 +231,10 @@ def crypt(sk, block, ED):
     i = 0
     while(i < 16):
         tR = R[:]
-        print("tr", tR)
         R = transform(expansionTable, R)
-        print("R", R)
         #XOR R and sk
         R = list(map(lambda x, y: x ^ y, R, sk[it]))
-        B = [R[:6], R[6:12], R[12:18], R[18:24], R[24:30], R[30:36], R[36:42], R[42:]]
-        #print(B)
+        B = [R[:6], R[6:12], R[12:18], R[18:24], R[24:30], R[30:36], R[36:42], R[42:]]#split for substitution
         #apply sboxes
         j = 0
         BRes = [0] * 32
@@ -237,7 +242,6 @@ def crypt(sk, block, ED):
         while j < 8:
             m = (B[j][0] << 1) + B[j][5]
             n = (B[j][1] << 3) + (B[j][2] << 2) + (B[j][3] << 1) + B[j][4]
-            #print("b", (B[j][0] <<1), B[j][5])
             x = sbox[j][(m << 4) + n]
 
             BRes[pos] = (x & 8) >> 3
@@ -257,4 +261,14 @@ def crypt(sk, block, ED):
     final = transform(finalPermutation, R + L)
     return final
 
-    
+def main():
+    print("Welcome to the DES demonstration")
+    print("This is the raw data to be encrypted: ", data.decode("utf-8"))
+    print("Starting encryption with key:", TheKey.decode("utf-8"))
+    sk = generateKey(TheKey)
+    crypted = blockData(sk, data, 'E')
+    print("crypted:",crypted)
+    decrypted = blockData(sk, crypted, 'D')
+    print("decrypted:", decrypted)
+          
+main()
