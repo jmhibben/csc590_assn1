@@ -1,6 +1,8 @@
 # ignoring file rsa.py is based on
 RSA-01.py
 
+*.zip
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
